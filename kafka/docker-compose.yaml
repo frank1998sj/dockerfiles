@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  zookeeper:
+    image: zookeeper:3.8.0
+    restart: unless-stopped
+    ports:
+      - 2181:2181
+    volumes:
+      - zookeeper-data:/data
+      - zookeeper-datalog:/datalog
+
+  kafka:
+    image: wurstmeister/kafka:2.13-2.8.1  # scala 2.13 with kafka 2.8.1
+    depends_on:
+      - zookeeper
+    restart: unless-stopped
+    ports:
+      - 9092:9092
+    volumes:
+      - kafka-data:/kafka
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: ${HOST_IP}
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:0.3.3
+    ports:
+      - 8080:8080
+    depends_on:
+      - zookeeper
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: dev-kafka
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+
+volumes:
+  zookeeper-data:
+  zookeeper-datalog:
+  kafka-data:

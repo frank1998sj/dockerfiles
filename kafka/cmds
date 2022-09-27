@@ -1,0 +1,10 @@
+$KAFKA_HOME/bin/kafka-topics.sh --create --topic FetchOilUnloadingImage \
+    --partitions 4 --zookeeper $ZK --replication-factor 1
+
+$KAFKA_HOME/bin/kafka-topics.sh --describe --topic FetchOilUnloadingImage --zookeeper $ZK
+
+$KAFKA_HOME/bin/kafka-console-producer.sh --topic FetchOilUnloadingImage \
+    --broker-list `broker-list.sh`
+
+$KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server `broker-list.sh` \
+    --topic FetchOilUnloadingImage
